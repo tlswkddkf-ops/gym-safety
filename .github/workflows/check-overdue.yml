@@ -1,0 +1,15 @@
+name: Check overdue gym check-ins
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check-overdue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call check-overdue API
+        run: |
+          curl -sf -X GET "https://gym-safety.vercel.app/api/check-overdue" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
