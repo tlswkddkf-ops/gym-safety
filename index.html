@@ -3,106 +3,251 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>건강체력증진실 입실 관리</title>
+  <title>이대부속고등학교 건강체력증진실</title>
   <style>
+    :root {
+      --ink: #16231d;
+      --muted: #64756c;
+      --line: #E3E8E4;
+      --bg-1: #F3F6F3;
+      --bg-2: #EAF0EA;
+      --card: #ffffff;
+      --accent: #1F6F54;
+      --accent-dark: #134736;
+      --accent-soft: #E6F2EC;
+      --gold: #B8912F;
+      --err: #B3392C;
+      --err-soft: #FBEAE7;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
-      background: #F4F6F8;
-      color: #2C3E50;
-      max-width: 720px;
-      margin: 40px auto;
-      padding: 0 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 320px, var(--bg-1) 100%);
+      color: var(--ink);
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
-    h1 { font-size: 20px; border-bottom: 2px solid #27AE60; padding-bottom: 10px; }
-    h2 { font-size: 16px; color: #2C3E50; margin-top: 32px; }
-    .card {
-      background: #fff;
-      border: 1px solid #E0E4E8;
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 12px;
+    header.page-head {
+      position: relative;
+      margin-bottom: 28px;
     }
-    .field { margin-bottom: 14px; }
-    .field label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #2C3E50;
+    .school-name {
+      display: inline-block;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
       margin-bottom: 6px;
     }
-    .field input {
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0 0 12px;
+      letter-spacing: -0.3px;
+    }
+    .head-rule {
+      height: 3px;
+      width: 56px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      border-radius: 3px;
+    }
+    .admin-toggle {
+      position: absolute;
+      top: 2px;
+      right: 0;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .admin-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 36px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2::before {
+      content: "";
+      width: 4px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      margin-top: 14px;
+      box-shadow: 0 1px 2px rgba(20,40,30,.04), 0 14px 32px -18px rgba(20,60,45,.18);
+    }
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 7px;
+      letter-spacing: .2px;
+    }
+    .field input, .field select {
       width: 100%;
       box-sizing: border-box;
-      padding: 10px 12px;
-      border: 1px solid #CBD3D9;
-      border-radius: 6px;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       font-size: 14px;
-      color: #2C3E50;
+      color: var(--ink);
+      background: #fff;
+      transition: border-color .15s ease, box-shadow .15s ease;
     }
-    .field input:focus {
+    .field input:focus, .field select:focus {
       outline: none;
-      border-color: #27AE60;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
     .minute-options { display: flex; gap: 8px; }
     .minute-btn {
       flex: 1;
-      padding: 10px 0;
-      border: 1px solid #CBD3D9;
-      border-radius: 6px;
+      padding: 11px 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       background: #fff;
-      color: #2C3E50;
+      color: var(--ink);
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
+      transition: all .15s ease;
     }
+    .minute-btn:hover { border-color: var(--accent); }
     .minute-btn.selected {
-      background: #27AE60;
-      border-color: #27AE60;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      border-color: var(--accent-dark);
       color: #fff;
     }
     .submit-btn {
       width: 100%;
-      margin-top: 8px;
-      padding: 12px 0;
+      margin-top: 10px;
+      padding: 13px 0;
       border: none;
-      border-radius: 6px;
-      background: #27AE60;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
       color: #fff;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      transition: filter .15s ease, transform .05s ease;
     }
-    .submit-btn:disabled { background: #A9DFBF; cursor: not-allowed; }
-    .checkout-btn {
-      padding: 6px 14px;
-      border: 1px solid #27AE60;
-      border-radius: 6px;
-      background: #fff;
-      color: #27AE60;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .status {
-      padding: 12px 16px;
+    .submit-btn:hover { filter: brightness(1.06); }
+    .submit-btn:active { transform: translateY(1px); }
+    .submit-btn:disabled { background: #B9CFC5; cursor: not-allowed; filter: none; }
+    .ghost-btn {
+      padding: 7px 14px;
+      border: 1px solid var(--accent);
       border-radius: 8px;
-      margin: 16px 0;
-      font-weight: 600;
+      background: #fff;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s ease;
+      white-space: nowrap;
     }
-    .status.ok { background: #E8F8EF; color: #1E8449; }
-    .status.err { background: #FDEDEC; color: #C0392B; }
-    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #E0E4E8; font-size: 14px; }
-    th { background: #2C3E50; color: #fff; }
-    tr:nth-child(even) { background: #fff; }
-    .hint { font-size: 13px; color: #7F8C8D; margin-top: 24px; }
-    code { background: #ECF0F1; padding: 2px 6px; border-radius: 4px; }
+    .ghost-btn:hover { background: var(--accent-soft); }
+    .ghost-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .ghost-btn.danger { border-color: var(--err); color: var(--err); }
+    .ghost-btn.danger:hover { background: var(--err-soft); }
+
+    .status {
+      padding: 13px 16px;
+      border-radius: 10px;
+      margin: 16px 0;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .status.ok { background: var(--accent-soft); color: var(--accent-dark); }
+    .status.err { background: var(--err-soft); color: var(--err); }
+
+    .table-wrap { overflow-x: auto; margin-top: 16px; border-radius: 12px; border: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    th { background: var(--accent-dark); color: #fff; font-weight: 700; font-size: 12.5px; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #FAFBF9; }
+    .empty-note { font-size: 13.5px; color: var(--muted); padding: 4px 2px; }
+
+    .hint { font-size: 13px; color: var(--muted); margin-top: 10px; }
+    code { background: var(--accent-soft); color: var(--accent-dark); padding: 2px 6px; border-radius: 4px; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+    .badge.run { background: var(--accent-soft); color: var(--accent-dark); }
+    .badge.done { background: #EEF0EE; color: var(--muted); }
+    .badge.yes { color: var(--accent-dark); }
+    .badge.no { color: var(--muted); }
+
+    .lock-box {
+      display: flex;
+      gap: 8px;
+    }
+    .lock-box input { flex: 1; }
+
+    .admin-section { display: none; }
+    .admin-section.open { display: block; }
+
+    .contact-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr 1.2fr 1.6fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-row input, .contact-row select {
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 13px;
+      width: 100%;
+    }
+    .contact-add {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+    }
+    .row-actions { display: flex; gap: 6px; }
+
+    footer.page-foot {
+      margin-top: 56px;
+      text-align: right;
+      font-size: 11.5px;
+      color: #A6B2AB;
+      letter-spacing: .2px;
+    }
   </style>
 </head>
 <body>
-  <h1>🏋️ 건강체력증진실 입실 관리</h1>
+  <header class="page-head">
+    <span class="school-name">이대부속고등학교</span>
+    <h1>🏋️ 건강체력증진실 입실 관리</h1>
+    <div class="head-rule"></div>
+    <button type="button" id="adminToggleBtn" class="admin-toggle">🔒 관리자 모드</button>
+  </header>
 
   <h2>입실 등록</h2>
   <div class="card">
@@ -135,6 +280,58 @@
   <div id="status" class="status">연결 시도 중...</div>
   <div id="result"></div>
 
+  <!-- ---- 관리자 모드 ---- -->
+  <div id="adminLocked" class="admin-section">
+    <h2>관리자 모드</h2>
+    <div class="card">
+      <div class="field">
+        <label for="adminPasswordInput">비밀번호</label>
+        <div class="lock-box">
+          <input type="password" id="adminPasswordInput" placeholder="비밀번호 입력">
+          <button type="button" id="adminUnlockBtn" class="ghost-btn">확인</button>
+        </div>
+      </div>
+      <div id="adminLoginMsg" class="status err" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div id="adminPanel" class="admin-section">
+    <h2>전체 입실 기록</h2>
+    <div class="card">
+      <button type="button" id="adminRefreshBtn" class="ghost-btn">새로고침</button>
+      <div id="adminCheckinsWrap"></div>
+    </div>
+
+    <h2>비상연락 담당자 관리</h2>
+    <div class="card">
+      <p class="hint" style="margin-top:0;">예상 운동시간이 지나도 확인이 없을 때, 해당 요일·시간대 담당자에게 이메일이 발송됩니다.</p>
+      <div id="contactsWrap"></div>
+      <div class="contact-add">
+        <div class="field" style="margin-bottom:10px;">
+          <label>새 담당자 추가</label>
+        </div>
+        <div class="contact-row" id="newContactRow">
+          <select id="newContactDay">
+            <option value="0">일요일</option>
+            <option value="1">월요일</option>
+            <option value="2">화요일</option>
+            <option value="3">수요일</option>
+            <option value="4">목요일</option>
+            <option value="5">금요일</option>
+            <option value="6">토요일</option>
+          </select>
+          <input type="time" id="newContactStart" value="00:00">
+          <input type="time" id="newContactEnd" value="23:59">
+          <input type="text" id="newContactName" placeholder="담당자 이름">
+          <input type="email" id="newContactEmail" placeholder="담당자 이메일">
+          <button type="button" id="newContactAddBtn" class="ghost-btn">추가</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-foot">by jungwoo p</footer>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://mewbkaeakktgknwounqc.supabase.co";
@@ -158,10 +355,10 @@
         statusEl.textContent = "✅ 현재 운동중인 인원 " + data.length + "명";
 
         if (data.length === 0) {
-          resultEl.innerHTML = "<p>현재 운동중인 인원이 없습니다.</p>";
+          resultEl.innerHTML = "<p class='empty-note'>현재 운동중인 인원이 없습니다.</p>";
           return;
         }
-        let html = "<table><tr><th>이름</th><th>전화번호</th><th>예상시간</th><th>입실시각</th><th></th></tr>";
+        let html = "<div class='table-wrap'><table><tr><th>이름</th><th>전화번호</th><th>예상시간</th><th>입실시각</th><th></th></tr>";
         data.forEach(row => {
           const time = new Date(row.created_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
           html += "<tr>"
@@ -169,10 +366,10 @@
             + "<td>" + row.phone + "</td>"
             + "<td>" + row.expected_minutes + "분</td>"
             + "<td>" + time + "</td>"
-            + "<td><button type=\"button\" class=\"checkout-btn\" data-id=\"" + row.id + "\">퇴실</button></td>"
+            + "<td><button type=\"button\" class=\"ghost-btn checkout-btn\" data-id=\"" + row.id + "\">퇴실</button></td>"
             + "</tr>";
         });
-        html += "</table>";
+        html += "</table></div>";
         resultEl.innerHTML = html;
 
       } catch (e) {
@@ -325,6 +522,292 @@
     }
 
     handleConfirmLink().then(loadData);
+
+    // ================= 관리자 모드 =================
+    // 로그인 시스템 없이 anon 키만으로 동작하는 앱이라, 이 비밀번호는
+    // "일반 사용자가 실수로 관리 화면을 건드리지 않게" 가리는 정도의 용도입니다.
+    const ADMIN_PASSWORD = "1234";
+    const DAY_NAMES = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+
+    const adminToggleBtn = document.getElementById("adminToggleBtn");
+    const adminLocked = document.getElementById("adminLocked");
+    const adminPanel = document.getElementById("adminPanel");
+    const adminPasswordInput = document.getElementById("adminPasswordInput");
+    const adminUnlockBtn = document.getElementById("adminUnlockBtn");
+    const adminLoginMsg = document.getElementById("adminLoginMsg");
+    const adminRefreshBtn = document.getElementById("adminRefreshBtn");
+    const adminCheckinsWrap = document.getElementById("adminCheckinsWrap");
+    const contactsWrap = document.getElementById("contactsWrap");
+
+    let adminUnlocked = false;
+    let adminVisible = false;
+
+    function renderAdminVisibility() {
+      const showLockForm = adminVisible && !adminUnlocked;
+      const showPanel = adminVisible && adminUnlocked;
+      adminLocked.classList.toggle("open", showLockForm);
+      adminPanel.classList.toggle("open", showPanel);
+      adminToggleBtn.textContent = adminUnlocked ? "🔓 관리자 모드 닫기" : "🔒 관리자 모드";
+    }
+
+    adminToggleBtn.addEventListener("click", () => {
+      if (adminUnlocked) {
+        adminUnlocked = false;
+        adminVisible = false;
+        adminPasswordInput.value = "";
+        renderAdminVisibility();
+        return;
+      }
+      adminVisible = !adminVisible;
+      renderAdminVisibility();
+      if (adminVisible) adminPasswordInput.focus();
+    });
+
+    function tryUnlock() {
+      if (adminPasswordInput.value === ADMIN_PASSWORD) {
+        adminUnlocked = true;
+        adminLoginMsg.style.display = "none";
+        adminPasswordInput.value = "";
+        renderAdminVisibility();
+        loadAdminCheckins();
+        loadContacts();
+      } else {
+        adminLoginMsg.style.display = "block";
+        adminLoginMsg.textContent = "비밀번호가 올바르지 않습니다.";
+      }
+    }
+
+    adminUnlockBtn.addEventListener("click", tryUnlock);
+    adminPasswordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") tryUnlock();
+    });
+
+    function fmtDateTime(v) {
+      if (!v) return "-";
+      return new Date(v).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    }
+
+    function statusBadge(status) {
+      const cls = status === "운동중" ? "run" : "done";
+      return "<span class='badge " + cls + "'>" + status + "</span>";
+    }
+
+    function yesNo(v) {
+      return v ? "<span class='badge yes'>✔</span>" : "<span class='badge no'>-</span>";
+    }
+
+    // ---- 전체 입실 기록 ----
+    async function loadAdminCheckins() {
+      adminCheckinsWrap.innerHTML = "<p class='empty-note'>불러오는 중...</p>";
+      try {
+        const { data, error } = await supabaseClient
+          .from("checkins")
+          .select("id, name, phone, email, expected_minutes, created_at, checkout_at, status, confirmed_at, alert_sent_at, escalated_at")
+          .order("created_at", { ascending: false })
+          .limit(200);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          adminCheckinsWrap.innerHTML = "<p class='empty-note'>기록이 없습니다.</p>";
+          return;
+        }
+
+        let html = "<div class='table-wrap'><table><tr>"
+          + "<th>이름</th><th>전화번호</th><th>이메일</th><th>예상시간</th><th>입실</th><th>퇴실</th>"
+          + "<th>상태</th><th>확인</th><th>1차알림</th><th>비상연락</th><th></th></tr>";
+
+        data.forEach(row => {
+          html += "<tr>"
+            + "<td>" + row.name + "</td>"
+            + "<td>" + row.phone + "</td>"
+            + "<td>" + (row.email || "-") + "</td>"
+            + "<td>" + row.expected_minutes + "분</td>"
+            + "<td>" + fmtDateTime(row.created_at) + "</td>"
+            + "<td>" + fmtDateTime(row.checkout_at) + "</td>"
+            + "<td>" + statusBadge(row.status) + "</td>"
+            + "<td>" + yesNo(row.confirmed_at) + "</td>"
+            + "<td>" + yesNo(row.alert_sent_at) + "</td>"
+            + "<td>" + yesNo(row.escalated_at) + "</td>"
+            + "<td><div class='row-actions'>"
+            + (row.status === "운동중"
+                ? "<button type=\"button\" class=\"ghost-btn force-checkout-btn\" data-id=\"" + row.id + "\">강제퇴실</button>"
+                : "")
+            + "<button type=\"button\" class=\"ghost-btn danger delete-checkin-btn\" data-id=\"" + row.id + "\">삭제</button>"
+            + "</div></td>"
+            + "</tr>";
+        });
+        html += "</table></div>";
+        adminCheckinsWrap.innerHTML = html;
+      } catch (e) {
+        adminCheckinsWrap.innerHTML = "<p class='status err'>불러오기 실패: " + e.message + "</p>";
+      }
+    }
+
+    adminRefreshBtn.addEventListener("click", () => {
+      loadAdminCheckins();
+      loadContacts();
+    });
+
+    function armConfirm(btn, label) {
+      if (btn.dataset.armed !== "1") {
+        btn.dataset.armed = "1";
+        const original = btn.textContent;
+        btn.textContent = label;
+        setTimeout(() => { btn.dataset.armed = ""; btn.textContent = original; }, 3000);
+        return false;
+      }
+      btn.dataset.armed = "";
+      return true;
+    }
+
+    adminCheckinsWrap.addEventListener("click", async (e) => {
+      const forceBtn = e.target.closest(".force-checkout-btn");
+      const deleteBtn = e.target.closest(".delete-checkin-btn");
+
+      if (forceBtn) {
+        const id = forceBtn.dataset.id;
+        forceBtn.disabled = true;
+        try {
+          const { error } = await supabaseClient
+            .from("checkins")
+            .update({ checkout_at: new Date().toISOString(), status: "정상퇴실" })
+            .eq("id", id);
+          if (error) throw error;
+          loadAdminCheckins();
+          loadData();
+        } catch (err) {
+          alert("강제 퇴실 처리 중 오류: " + err.message);
+          forceBtn.disabled = false;
+        }
+        return;
+      }
+
+      if (deleteBtn) {
+        if (!armConfirm(deleteBtn, "정말 삭제?")) return;
+        deleteBtn.disabled = true;
+        try {
+          const { error } = await supabaseClient.from("checkins").delete().eq("id", deleteBtn.dataset.id);
+          if (error) throw error;
+          loadAdminCheckins();
+          loadData();
+        } catch (err) {
+          alert("삭제 중 오류: " + err.message);
+          deleteBtn.disabled = false;
+        }
+      }
+    });
+
+    // ---- 비상연락 담당자 관리 ----
+    async function loadContacts() {
+      contactsWrap.innerHTML = "<p class='empty-note'>불러오는 중...</p>";
+      try {
+        const { data, error } = await supabaseClient
+          .from("notification_schedule")
+          .select("id, day_of_week, start_time, end_time, contact_name, contact_email")
+          .order("day_of_week", { ascending: true })
+          .order("start_time", { ascending: true });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          contactsWrap.innerHTML = "<p class='empty-note'>등록된 담당자가 없습니다.</p>";
+          return;
+        }
+
+        let html = "";
+        data.forEach(row => {
+          html += "<div class='contact-row' data-id='" + row.id + "'>"
+            + "<select class='c-day'>"
+            + DAY_NAMES.map((d, i) => "<option value='" + i + "'" + (i === row.day_of_week ? " selected" : "") + ">" + d + "</option>").join("")
+            + "</select>"
+            + "<input type='time' class='c-start' value='" + row.start_time.slice(0, 5) + "'>"
+            + "<input type='time' class='c-end' value='" + row.end_time.slice(0, 5) + "'>"
+            + "<input type='text' class='c-name' value='" + row.contact_name + "'>"
+            + "<input type='email' class='c-email' value='" + row.contact_email + "'>"
+            + "<div class='row-actions'>"
+            + "<button type='button' class='ghost-btn save-contact-btn'>저장</button>"
+            + "<button type='button' class='ghost-btn danger delete-contact-btn'>삭제</button>"
+            + "</div>"
+            + "</div>";
+        });
+        contactsWrap.innerHTML = html;
+      } catch (e) {
+        contactsWrap.innerHTML = "<p class='status err'>불러오기 실패: " + e.message + "</p>";
+      }
+    }
+
+    contactsWrap.addEventListener("click", async (e) => {
+      const row = e.target.closest(".contact-row");
+      if (!row) return;
+      const id = row.dataset.id;
+
+      if (e.target.classList.contains("save-contact-btn")) {
+        const btn = e.target;
+        btn.disabled = true;
+        try {
+          const { error } = await supabaseClient
+            .from("notification_schedule")
+            .update({
+              day_of_week: parseInt(row.querySelector(".c-day").value, 10),
+              start_time: row.querySelector(".c-start").value,
+              end_time: row.querySelector(".c-end").value,
+              contact_name: row.querySelector(".c-name").value.trim(),
+              contact_email: row.querySelector(".c-email").value.trim()
+            })
+            .eq("id", id);
+          if (error) throw error;
+          btn.textContent = "저장됨";
+          setTimeout(() => { btn.textContent = "저장"; btn.disabled = false; }, 1500);
+        } catch (err) {
+          alert("저장 중 오류: " + err.message);
+          btn.disabled = false;
+        }
+        return;
+      }
+
+      if (e.target.classList.contains("delete-contact-btn")) {
+        if (!armConfirm(e.target, "정말 삭제?")) return;
+        e.target.disabled = true;
+        try {
+          const { error } = await supabaseClient.from("notification_schedule").delete().eq("id", id);
+          if (error) throw error;
+          loadContacts();
+        } catch (err) {
+          alert("삭제 중 오류: " + err.message);
+          e.target.disabled = false;
+        }
+      }
+    });
+
+    document.getElementById("newContactAddBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("newContactAddBtn");
+      const name = document.getElementById("newContactName").value.trim();
+      const email = document.getElementById("newContactEmail").value.trim();
+      const day = parseInt(document.getElementById("newContactDay").value, 10);
+      const start = document.getElementById("newContactStart").value;
+      const end = document.getElementById("newContactEnd").value;
+
+      if (!name || !email || !start || !end) {
+        alert("담당자 이름, 이메일, 시작/종료 시간을 모두 입력해주세요.");
+        return;
+      }
+
+      btn.disabled = true;
+      try {
+        const { error } = await supabaseClient
+          .from("notification_schedule")
+          .insert({ day_of_week: day, start_time: start, end_time: end, contact_name: name, contact_email: email });
+        if (error) throw error;
+        document.getElementById("newContactName").value = "";
+        document.getElementById("newContactEmail").value = "";
+        loadContacts();
+      } catch (err) {
+        alert("추가 중 오류: " + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
