@@ -122,8 +122,9 @@
       <label>예상 운동시간</label>
       <div class="minute-options">
         <button type="button" class="minute-btn" data-minutes="30">30분</button>
-        <button type="button" class="minute-btn" data-minutes="45">45분</button>
         <button type="button" class="minute-btn" data-minutes="60">60분</button>
+        <button type="button" class="minute-btn" data-minutes="90">90분</button>
+        <button type="button" class="minute-btn" data-minutes="120">120분</button>
       </div>
     </div>
     <button type="button" id="checkinBtn" class="submit-btn">입실</button>
@@ -138,14 +139,14 @@
   <script>
     const SUPABASE_URL = "https://mewbkaeakktgknwounqc.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_HK_iVznXT4dJYjZtOBcLQg_ppxaMY_A";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const statusEl = document.getElementById("status");
     const resultEl = document.getElementById("result");
 
     async function loadData() {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from("checkins")
           .select("id, name, phone, expected_minutes, created_at, status, checkout_at")
           .eq("status", "운동중")
@@ -189,7 +190,7 @@
       const id = btn.dataset.id;
       btn.disabled = true;
       try {
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from("checkins")
           .update({
             checkout_at: new Date().toISOString(),
@@ -258,7 +259,7 @@
         // (다른 사람이 다른 사람의 확인 링크를 추측할 수 없게 하기 위함)
         const confirmToken = crypto.randomUUID();
 
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from("checkins")
           .insert({
             name,
@@ -297,7 +298,7 @@
       if (!confirmId || !token) return;
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from("checkins")
           .update({ confirmed_at: new Date().toISOString() })
           .eq("id", confirmId)
