@@ -1,0 +1,8 @@
+{
+  "name": "gym-safety",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "nodemailer": "^6.9.14"
+  }
+}
