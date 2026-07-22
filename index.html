@@ -209,6 +209,29 @@
     .admin-section { display: none; }
     .admin-section.open { display: block; }
 
+    .notice-card {
+      background: #FFF9EA;
+      border: 1px solid #F0DFA8;
+      border-left: 4px solid var(--gold);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-top: 14px;
+    }
+    .notice-card h3 {
+      margin: 0 0 10px;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #7A5C0E;
+    }
+    .notice-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13.5px;
+      color: #5C4A16;
+    }
+    .notice-card li { margin-bottom: 6px; }
+    .notice-card li:last-child { margin-bottom: 0; }
+
     .contacts-scroll { overflow-x: auto; }
     .contact-row {
       display: grid;
@@ -251,6 +274,21 @@
     <div class="head-rule"></div>
     <button type="button" id="adminToggleBtn" class="admin-toggle">🔒 관리자 모드</button>
   </header>
+
+  <div class="notice-card">
+    <h3>⚠️ 이용 전 꼭 확인하세요</h3>
+    <ul>
+      <li>운동 전후 반드시 준비운동·정리운동을 합니다.</li>
+      <li>입실·퇴실 시 반드시 QR코드를 이용해 주세요.</li>
+      <li>사용법을 모르는 기구는 임의로 사용하지 말고 담당 교사에게 문의합니다.</li>
+      <li>본인 체력 수준을 넘는 무게·횟수를 무리하게 시도하지 않습니다.</li>
+      <li>어지러움, 가슴 통증, 호흡곤란 등 이상 증상이 있으면 즉시 운동을 멈추고 도움을 요청합니다.</li>
+      <li>바벨 등 프리웨이트 기구는 모르면 혼자 하지 않고, 가급적 보조자와 함께 사용합니다.</li>
+      <li>운동 중 흘린 땀은 수건으로 닦아 기구를 청결하게 유지합니다.</li>
+      <li>사용한 기구는 제자리에 정리하여 다음 사용자의 안전을 지킵니다.</li>
+      <li>응급상황 발생 시 즉시 119에 신고합니다.</li>
+    </ul>
+  </div>
 
   <h2>입실 등록</h2>
   <div class="card">
