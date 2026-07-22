@@ -209,6 +209,7 @@
     .admin-section { display: none; }
     .admin-section.open { display: block; }
 
+    .contacts-scroll { overflow-x: auto; }
     .contact-row {
       display: grid;
       grid-template-columns: 1.1fr 1fr 1fr 1.2fr 1.6fr auto;
@@ -216,6 +217,7 @@
       align-items: center;
       padding: 10px 0;
       border-bottom: 1px solid var(--line);
+      min-width: 640px;
     }
     .contact-row:last-child { border-bottom: none; }
     .contact-row input, .contact-row select {
@@ -224,6 +226,7 @@
       border-radius: 8px;
       font-size: 13px;
       width: 100%;
+      min-width: 0;
     }
     .contact-add {
       margin-top: 14px;
@@ -305,26 +308,28 @@
     <h2>비상연락 담당자 관리</h2>
     <div class="card">
       <p class="hint" style="margin-top:0;">예상 운동시간이 지나도 확인이 없을 때, 해당 요일·시간대 담당자에게 이메일이 발송됩니다.</p>
-      <div id="contactsWrap"></div>
-      <div class="contact-add">
-        <div class="field" style="margin-bottom:10px;">
-          <label>새 담당자 추가</label>
-        </div>
-        <div class="contact-row" id="newContactRow">
-          <select id="newContactDay">
-            <option value="0">일요일</option>
-            <option value="1">월요일</option>
-            <option value="2">화요일</option>
-            <option value="3">수요일</option>
-            <option value="4">목요일</option>
-            <option value="5">금요일</option>
-            <option value="6">토요일</option>
-          </select>
-          <input type="time" id="newContactStart" value="00:00">
-          <input type="time" id="newContactEnd" value="23:59">
-          <input type="text" id="newContactName" placeholder="담당자 이름">
-          <input type="email" id="newContactEmail" placeholder="담당자 이메일">
-          <button type="button" id="newContactAddBtn" class="ghost-btn">추가</button>
+      <div class="contacts-scroll">
+        <div id="contactsWrap"></div>
+        <div class="contact-add">
+          <div class="field" style="margin-bottom:10px;">
+            <label>새 담당자 추가</label>
+          </div>
+          <div class="contact-row" id="newContactRow">
+            <select id="newContactDay">
+              <option value="0">일요일</option>
+              <option value="1">월요일</option>
+              <option value="2">화요일</option>
+              <option value="3">수요일</option>
+              <option value="4">목요일</option>
+              <option value="5">금요일</option>
+              <option value="6">토요일</option>
+            </select>
+            <input type="time" id="newContactStart" value="00:00">
+            <input type="time" id="newContactEnd" value="23:59">
+            <input type="text" id="newContactName" placeholder="담당자 이름">
+            <input type="email" id="newContactEmail" placeholder="담당자 이메일">
+            <button type="button" id="newContactAddBtn" class="ghost-btn">추가</button>
+          </div>
         </div>
       </div>
     </div>
