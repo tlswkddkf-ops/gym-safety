@@ -1,5 +1,6 @@
 const { createClient } = require("@supabase/supabase-js");
 const nodemailer = require("nodemailer");
+const webpush = require("web-push");
 
 const BUFFER_MINUTES = parseInt(process.env.BUFFER_MINUTES || "10", 10);
 const WAIT_MINUTES = parseInt(process.env.WAIT_MINUTES || "15", 10);
@@ -17,6 +18,25 @@ function getMailer() {
       pass: process.env.GMAIL_APP_PASSWORD
     }
   });
+}
+
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    `mailto:${process.env.GMAIL_USER || "no-reply@gym-safety.vercel.app"}`,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
+
+// 이메일과 별개로 즉시 휴대폰 알림을 시도. 구독이 없거나 실패해도
+// 이메일 발송 결과에는 영향을 주지 않도록 별도로 처리.
+async function sendPushSafely(subscription, payload) {
+  if (!subscription) return;
+  try {
+    await webpush.sendNotification(subscription, JSON.stringify(payload));
+  } catch (e) {
+    // 만료된 구독 등은 조용히 무시 (이메일이 안전망 역할을 함)
+  }
 }
 
 // notification_schedule의 요일/시간대를 서버 실행 위치(UTC 등)와 무관하게
@@ -61,7 +81,7 @@ module.exports = async (req, res) => {
     // 1단계: (예상 운동시간 + 여유시간)이 지났는데 아직 1차 확인 요청을 안 보낸 사람
     const { data: dueForAlert, error: err1 } = await supabase
       .from("checkins")
-      .select("id, name, phone, email, expected_minutes, created_at, confirm_token")
+      .select("id, name, phone, email, expected_minutes, created_at, confirm_token, push_subscription")
       .eq("status", "운동중")
       .is("alert_sent_at", null);
 
@@ -79,6 +99,12 @@ module.exports = async (req, res) => {
           to: row.email,
           subject: "[건강체력증진실] 운동 시간 확인 요청",
           text: `${row.name}님, 예상 운동시간이 지났습니다. 계속 안전하게 운동 중이시라면 아래 링크를 눌러 확인해주세요.\n\n${confirmUrl}\n\n${WAIT_MINUTES}분 내에 확인하지 않으시면 비상연락 담당자에게 알림이 발송됩니다.`
+        });
+
+        await sendPushSafely(row.push_subscription, {
+          title: "운동 시간 확인 요청",
+          body: `${row.name}님, 예상 운동시간이 지났습니다. 눌러서 확인해주세요.`,
+          url: confirmUrl
         });
 
         await supabase
