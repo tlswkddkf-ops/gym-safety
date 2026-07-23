@@ -196,6 +196,7 @@
     tr:last-child td { border-bottom: none; }
     tr:nth-child(even) td { background: #FAFBF9; }
     .empty-note { font-size: 13.5px; color: var(--muted); padding: 4px 2px; }
+    td.err { color: var(--err); font-weight: 700; }
 
     .hint { font-size: 13px; color: var(--muted); margin-top: 10px; }
     code { background: var(--accent-soft); color: var(--accent-dark); padding: 2px 6px; border-radius: 4px; }
@@ -423,6 +424,15 @@
     const statusEl = document.getElementById("status");
     const resultEl = document.getElementById("result");
 
+    function remainingLabel(createdAt, expectedMinutes) {
+      const deadline = new Date(createdAt).getTime() + expectedMinutes * 60000;
+      const diffMin = Math.round((deadline - Date.now()) / 60000);
+      if (diffMin >= 0) {
+        return { text: diffMin + "분 남음", cls: "" };
+      }
+      return { text: Math.abs(diffMin) + "분 초과", cls: "err" };
+    }
+
     async function loadData() {
       try {
         const { data, error } = await supabaseClient
@@ -440,14 +450,16 @@
           resultEl.innerHTML = "<p class='empty-note'>현재 운동중인 인원이 없습니다.</p>";
           return;
         }
-        let html = "<div class='table-wrap'><table><tr><th>이름</th><th>전화번호</th><th>예상시간</th><th>입실시각</th><th></th></tr>";
+        let html = "<div class='table-wrap'><table><tr><th>이름</th><th>전화번호</th><th>예상시간</th><th>입실시각</th><th>남은시간</th><th></th></tr>";
         data.forEach(row => {
           const time = new Date(row.created_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+          const remaining = remainingLabel(row.created_at, row.expected_minutes);
           html += "<tr>"
             + "<td>" + row.name + "</td>"
             + "<td>" + row.phone + "</td>"
             + "<td>" + row.expected_minutes + "분</td>"
             + "<td>" + time + "</td>"
+            + "<td class='" + remaining.cls + "'>" + remaining.text + "</td>"
             + "<td><button type=\"button\" class=\"ghost-btn checkout-btn\" data-id=\"" + row.id + "\">퇴실</button></td>"
             + "</tr>";
         });
@@ -460,6 +472,9 @@
         resultEl.innerHTML = "<p class='hint'>URL/키가 맞는지, 테이블 이름이 checkins인지 확인해보세요.</p>";
       }
     }
+
+    // 남은시간이 실시간처럼 보이도록 주기적으로 다시 그림
+    setInterval(loadData, 30000);
 
     // ---- 퇴실 처리 ----
     resultEl.addEventListener("click", async (e) => {
@@ -495,18 +510,32 @@
     const minuteButtons = document.querySelectorAll(".minute-btn");
     let selectedMinutes = null;
 
-    // 마지막으로 입력한 이름/전화번호/이메일을 기억해서 다음 방문 때 자동으로 채워줌
-    const REMEMBER_KEY = "gymSafetyLastCheckin";
-    try {
-      const saved = JSON.parse(localStorage.getItem(REMEMBER_KEY) || "{}");
-      if (saved.name) nameInput.value = saved.name;
-      if (saved.phone) phoneInput.value = saved.phone;
-      if (saved.email) emailInput.value = saved.email;
-    } catch (e) { /* 저장된 값이 없거나 손상된 경우 무시 */ }
+    // 이름별로 전화번호/이메일을 기억해서, 같은 기기를 여러 사람이 써도
+    // 서로의 정보가 섞이지 않게 함. 이름을 입력하고 다음 칸으로 넘어가면
+    // 그 이름으로 저장된 값이 있을 때 자동으로 채워주고, 입실 시 최신 값으로 갱신.
+    const PROFILES_KEY = "gymSafetyProfiles";
 
-    function rememberCheckinInfo(name, phone, email) {
-      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ name, phone, email }));
+    function loadProfiles() {
+      try {
+        return JSON.parse(localStorage.getItem(PROFILES_KEY) || "{}");
+      } catch (e) {
+        return {};
+      }
     }
+
+    function saveProfile(name, phone, email) {
+      const profiles = loadProfiles();
+      profiles[name] = { phone, email };
+      localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+    }
+
+    nameInput.addEventListener("blur", () => {
+      const profile = loadProfiles()[nameInput.value.trim()];
+      if (profile) {
+        phoneInput.value = profile.phone || "";
+        emailInput.value = profile.email || "";
+      }
+    });
 
     minuteButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -554,7 +583,7 @@
         if (error) throw error;
 
         showCheckinMsg("ok", "입실되었습니다.");
-        rememberCheckinInfo(name, phone, email);
+        saveProfile(name, phone, email);
         nameInput.value = name;
         phoneInput.value = phone;
         emailInput.value = email;

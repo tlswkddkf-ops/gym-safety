@@ -4,6 +4,7 @@ const webpush = require("web-push");
 
 const BUFFER_MINUTES = parseInt(process.env.BUFFER_MINUTES || "10", 10);
 const WAIT_MINUTES = parseInt(process.env.WAIT_MINUTES || "15", 10);
+const PUSH_REPEAT_MINUTES = parseInt(process.env.PUSH_REPEAT_MINUTES || "5", 10);
 const SITE_URL = process.env.SITE_URL || "https://gym-safety.vercel.app";
 
 function getSupabase() {
@@ -75,7 +76,7 @@ module.exports = async (req, res) => {
   const supabase = getSupabase();
   const mailer = getMailer();
   const now = Date.now();
-  const results = { alerted: [], escalated: [], errors: [] };
+  const results = { alerted: [], reminded: [], escalated: [], errors: [] };
 
   try {
     // 1단계: (예상 운동시간 + 여유시간)이 지났는데 아직 1차 확인 요청을 안 보낸 사람
@@ -107,9 +108,10 @@ module.exports = async (req, res) => {
           url: confirmUrl
         });
 
+        const nowIso = new Date().toISOString();
         await supabase
           .from("checkins")
-          .update({ alert_sent_at: new Date().toISOString() })
+          .update({ alert_sent_at: nowIso, last_push_at: nowIso })
           .eq("id", row.id);
 
         results.alerted.push(row.id);
@@ -118,7 +120,41 @@ module.exports = async (req, res) => {
       }
     }
 
-    // 2단계: 1차 확인 요청을 보냈지만 무응답 상태로 대기시간이 지난 사람 -> 비상연락
+    // 2단계: 1차 확인 요청은 보냈지만 아직 확인/퇴실을 안 한 사람 -> 퇴실할 때까지
+    // PUSH_REPEAT_MINUTES 간격으로 계속 푸시 알림만 반복 (이메일은 재발송하지 않음)
+    const { data: dueForReminder, error: errR } = await supabase
+      .from("checkins")
+      .select("id, name, push_subscription, last_push_at")
+      .eq("status", "운동중")
+      .is("confirmed_at", null)
+      .not("alert_sent_at", "is", null)
+      .not("last_push_at", "is", null);
+
+    if (errR) throw errR;
+
+    for (const row of dueForReminder || []) {
+      const nextDue = new Date(row.last_push_at).getTime() + PUSH_REPEAT_MINUTES * 60000;
+      if (now < nextDue || !row.push_subscription) continue;
+
+      try {
+        await sendPushSafely(row.push_subscription, {
+          title: "아직 퇴실 전이신가요?",
+          body: `${row.name}님, 예상 운동시간이 지났습니다. 퇴실 처리를 잊지 마세요!`,
+          url: SITE_URL
+        });
+
+        await supabase
+          .from("checkins")
+          .update({ last_push_at: new Date().toISOString() })
+          .eq("id", row.id);
+
+        results.reminded.push(row.id);
+      } catch (e) {
+        results.errors.push({ id: row.id, stage: "remind", message: e.message });
+      }
+    }
+
+    // 3단계: 1차 확인 요청을 보냈지만 무응답 상태로 대기시간이 지난 사람 -> 비상연락
     const { data: dueForEscalation, error: err2 } = await supabase
       .from("checkins")
       .select("id, name, phone, email, expected_minutes, created_at, alert_sent_at")
