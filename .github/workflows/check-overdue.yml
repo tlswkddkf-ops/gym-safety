@@ -1,9 +1,11 @@
 name: Check overdue gym check-ins
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
   workflow_dispatch:
+  # Scheduled runs now happen via Supabase pg_cron (see cron.job in the DB),
+  # which is far more reliable than GitHub Actions' scheduler at 5-min
+  # intervals. This workflow is kept for manual testing only, to avoid
+  # firing the same check twice.
 
 jobs:
   check-overdue:
